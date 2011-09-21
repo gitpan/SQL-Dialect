@@ -1,0 +1,6 @@
+Revision history for Perl extension SQL::Dialect.
+
+0.01      2011-09-21
+ - First release.
+ - Renamed from DBIx::Dialect.
+
