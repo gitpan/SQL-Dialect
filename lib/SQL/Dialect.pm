@@ -1,6 +1,6 @@
 package SQL::Dialect;
 {
-  $SQL::Dialect::VERSION = '0.01';
+  $SQL::Dialect::VERSION = '0.02';
 }
 use Moose;
 use namespace::autoclean;
@@ -43,9 +43,9 @@ use List::MoreUtils qw( uniq );
 
 Each implementation, or dialect, of SQL has quirks that slightly (or in some cases
 drastically) change the way that the SQL must be written to get a particular task
-done.  In order for this module to know which particular set of quirks it should
-use a dialect must be declared.  The dialect will default to "default" which is very
-limited and only declares the bare minimum of features.
+done.  In order for this module to work a dialect must be declared.  The dialect
+will default to "default" which is very limited and only declares the bare minimum
+of features.
 
 Currently a dialect type can be one of:
 
@@ -55,7 +55,7 @@ Currently a dialect type can be one of:
     postgresql
     sqlite
 
-When declaring the dialecti type that you want you can either specify one of the dialects
+When declaring the dialect type that you want you can either specify one of the dialects
 above, or you can just pass a DBI handle ($dbh) and it will be auto-detected.  Currently
 the list of supported DBI Driver is limited to:
 
@@ -129,7 +129,7 @@ coerce 'SQL::Dialect::Types::Type',
     from class_type('DBI::db'),
     via { $dbd_dialects->{ $_->{Driver}->{Name} } };
 
-has _type => (
+has type => (
     is       => 'ro',
     isa      => 'SQL::Dialect::Types::Type',
     coerce   => 1,
@@ -137,9 +137,7 @@ has _type => (
     init_arg => 'type',
 );
 
-=head1 STATEMENT ATTRIBUTES
-
-These attributes describe the supported statement clauses and quirks.
+=head1 STATEMENT PROPERTIES
 
 =head2 limit
 
@@ -155,7 +153,7 @@ The dialect of INSERT/UPDATE/DELETE ... RETURNING syntax.
     into   (oracle)
     select (postgresql)
 
-=head1 DATABASE ATTRIBUTES
+=head1 DATABASE PROPERTIES
 
 =head2 sequences
 
@@ -164,7 +162,7 @@ Whether the database supports sequences.
     postgresql
     oracle
 
-=head1 FUNCTION ATTRIBUTES
+=head1 FUNCTION PROPERTIES
 
 =head2 last_insert_id
 
@@ -178,7 +176,7 @@ Whether the LAST_INSERT_ROWID() function is supported.
 
     sqlite
 
-=head1 OTHER ATTRIBUTES
+=head1 OTHER PROPERTIES
 
 =head2 rownum
 
@@ -233,7 +231,7 @@ a table name followed by a column name.
             "_build_$feature",
             sub{
                 my ($self) = @_;
-                return $dialects->{ $self->_type() }->{ $feature };
+                return $dialects->{ $self->type() }->{ $feature };
             },
         );
     }
@@ -281,6 +279,8 @@ __END__
 =head1 TODO
 
 =over
+
+=item * A more complete test suite.
 
 =item * Add more dialects and supported DBI drivers!  If anyone wants
 to help with this I'd greatly appreciate it.
